@@ -1,0 +1,3 @@
+# Ignorer les fichiers liés à Node.js
+.env
+node_modules/

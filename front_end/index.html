@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionnaire de Tournoi Futsal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Tournoi Futsal</h2>
+                <p>Gestionnaire d'Événements</p>
+            </div>
+            <div class="sidebar-menu">
+                <a href="#dashboard" class="menu-item active" data-page="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Accueil</span>
+                </a>
+                <a href="#calendar" class="menu-item" data-page="calendar">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Calendrier</span>
+                </a>
+                <a href="#teams" class="menu-item" data-page="teams">
+                    <i class="fas fa-futbol"></i>
+                    <span>Équipes</span>
+                </a>
+                <a href="#results" class="menu-item" data-page="results">
+                    <i class="fas fa-trophy"></i>
+                    <span>Résultats</span>
+                </a>
+                <a href="#standings" class="menu-item" data-page="standings">
+                    <i class="fas fa-medal"></i>
+                    <span>Classement</span>
+                </a>
+                <a href="#live" class="menu-item" data-page="live-match">
+                    <i class="fas fa-broadcast-tower"></i>
+                    <span>Match en Direct</span>
+                </a>
+                <a href="#settings" class="menu-item" data-page="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Personnalisation</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1 id="page-title">Tableau de Bord</h1>
+                <div class="user-controls">
+                    <span id="user-role">Utilisateur</span>
+                    <button class="btn btn-secondary" id="toggle-admin">Mode Admin</button>
+                    <button class="btn btn-primary" id="user-settings">Paramètres</button>
+                </div>
+            </div>
+
+            <!-- Dashboard Page -->
+            <div class="page active" id="dashboard">
+                <div class="dashboard" id="user-dashboard">
+                    <!-- Widgets will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Calendar Page -->
+            <div class="page" id="calendar">
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3 class="widget-title"><i class="fas fa-calendar-alt"></i> Calendrier des Matchs</h3>
+                        <div class="widget-actions admin-only" style="display: none;">
+                            <button class="btn btn-primary" id="add-match">Ajouter un Match</button>
+                        </div>
+                    </div>
+                    <div class="widget-content">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Heure</th>
+                                    <th>Équipe A</th>
+                                    <th>Équipe B</th>
+                                    <th>Lieu</th>
+                                    <th class="admin-only" style="display: none;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="matches-table">
+                                <!-- Matches will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teams Page -->
+            <div class="page" id="teams">
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3 class="widget-title"><i class="fas fa-futbol"></i> Équipes Participantes</h3>
+                        <div class="widget-actions admin-only" style="display: none;">
+                            <button class="btn btn-primary" id="add-team">Ajouter une Équipe</button>
+                        </div>
+                    </div>
+                    <div class="widget-content">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Entraîneur</th>
+                                    <th>Nombre de Joueurs</th>
+                                    <th class="admin-only" style="display: none;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teams-table">
+                                <!-- Teams will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Page -->
+            <div class="page" id="results">
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3 class="widget-title"><i class="fas fa-trophy"></i> Résultats des Matchs</h3>
+                    </div>
+                    <div class="widget-content">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Équipe A</th>
+                                    <th>Score</th>
+                                    <th>Équipe B</th>
+                                    <th>Détails</th>
+                                </tr>
+                            </thead>
+                            <tbody id="results-table">
+                                <!-- Results will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Standings Page -->
+            <div class="page" id="standings">
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3 class="widget-title"><i class="fas fa-medal"></i> Classement</h3>
+                        <div class="widget-actions admin-only" style="display: none;">
+                            <button class="btn btn-primary" id="update-standings">Mettre à jour</button>
+                        </div>
+                    </div>
+                    <div class="widget-content">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Équipe</th>
+                                    <th>J</th>
+                                    <th>G</th>
+                                    <th>N</th>
+                                    <th>P</th>
+                                    <th>BP</th>
+                                    <th>BC</th>
+                                    <th>Diff</th>
+                                    <th>Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody id="standings-table">
+                                <!-- Standings will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Match Page -->
+            <div class="page" id="live-match">
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3 class="widget-title"><i class="fas fa-broadcast-tower"></i> Match en Direct</h3>
+                        <div class="widget-actions admin-only" style="display: none;">
+                            <button class="btn btn-primary" id="select-live-match">Sélectionner Match</button>
+                        </div>
+                    </div>
+                    <div class="widget-content">
+                        <div id="live-match-status">
+                            <div class="text-center mb-20" id="no-live-message">
+                                Aucun match en direct pour le moment
+                            </div>
+                            <div id="live-match-details" class="hidden">
+                                <div class="score-display">
+                                    <div class="team-name" id="team-a-name">Équipe A</div>
+                                    <div class="score" id="team-a-score">0</div>
+                                    <div>-</div>
+                                    <div class="score" id="team-b-score">0</div>
+                                    <div class="team-name" id="team-b-name">Équipe B</div>
+                                </div>
+                                <div class="text-center mb-10">
+                                    <span id="match-time">00:00</span>
+                                </div>
+                                <div class="events-log" id="match-events">
+                                    <!-- Events will be dynamically added here -->
+                                </div>
+
+                                <div class="admin-controls admin-only" style="display: none;">
+                                    <h4>Contrôles Admin</h4>
+                                    <div class="form-group">
+                                        <label>Action</label>
+                                        <select class="form-control" id="event-type">
+                                            <option value="goal">But</option>
+                                            <option value="foul">Faute</option>
+                                            <option value="card">Carton</option>
+                                            <option value="substitution">Remplacement</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Équipe</label>
+                                        <select class="form-control" id="event-team">
+                                            <option value="team-a">Équipe A</option>
+                                            <option value="team-b">Équipe B</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Détails</label>
+                                        <input type="text" class="form-control" id="event-details" placeholder="Détails de l'événement">
+                                    </div>
+                                    <button class="btn btn-primary" id="add-event">Ajouter Événement</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div class="page" id="settings">
+                <div class="settings-panel">
+                    <h3 class="settings-title">Personnalisation de l'Interface</h3>
+                    
+                    <h4 class="mb-10">Couleur du Thème</h4>
+                    <div class="color-options">
+                        <div class="color-option active" style="background-color: #1e88e5;" data-color="#1e88e5"></div>
+                        <div class="color-option" style="background-color: #43a047;" data-color="#43a047"></div>
+                        <div class="color-option" style="background-color: #e53935;" data-color="#e53935"></div>
+                        <div class="color-option" style="background-color: #8e24aa;" data-color="#8e24aa"></div>
+                        <div class="color-option" style="background-color: #fb8c00;" data-color="#fb8c00"></div>
+                    </div>
+
+                    <h4 class="mb-10">Widgets de l'Accueil</h4>
+                    <div class="widgets-selection">
+                        <label class="widget-option">
+                            <input type="checkbox" value="upcoming-matches" checked> Prochains Matchs
+                        </label>
+                        <label class="widget-option">
+                            <input type="checkbox" value="recent-results" checked> Derniers Résultats
+                        </label>
+                        <label class="widget-option">
+                            <input type="checkbox" value="top-teams" checked> Meilleures Équipes
+                        </label>
+                        <label class="widget-option">
+                            <input type="checkbox" value="live-updates" checked> Mises à jour en Direct
+                        </label>
+                    </div>
+
+                    <button class="btn btn-primary" id="save-settings">Enregistrer les préférences</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Match Modal -->
+    <div class="modal" id="add-match-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ajouter un Match</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="add-match-form">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" class="form-control" id="match-date" required>
+                </div>
+                <div class="form-group">
+                    <label>Heure</label>
+                    <input type="time" class="form-control" id="match-time-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Équipe A</label>
+                    <select class="form-control" id="team-a" required>
+                        <!-- Teams will be dynamically added here -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Équipe B</label>
+                    <select class="form-control" id="team-b" required>
+                        <!-- Teams will be dynamically added here -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Lieu</label>
+                    <input type="text" class="form-control" id="match-venue" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Ajouter</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Team Modal -->
+    <div class="modal" id="add-team-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ajouter une Équipe</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="add-team-form">
+                <div class="form-group">
+                    <label>Nom de l'Équipe</label>
+                    <input type="text" class="form-control" id="team-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Entraîneur</label>
+                    <input type="text" class="form-control" id="team-coach">
+                </div>
+                <div class="form-group">
+                    <label>Joueurs (un par ligne)</label>
+                    <textarea class="form-control" id="team-players" rows="5"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Ajouter</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Select Live Match Modal -->
+    <div class="modal" id="select-live-match-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Sélectionner un Match en Direct</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="select-live-match-form">
+                <div class="form-group">
+                    <label>Match</label>
+                    <select class="form-control" id="live-match-select" required>
+                        <!-- Matches will be dynamically added here -->
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Démarrer</button>
+            </form>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
