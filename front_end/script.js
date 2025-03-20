@@ -1142,3 +1142,61 @@ function formatDate(dateString) {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
     return new Date(dateString).toLocaleDateString('fr-FR', options);
 }
+
+// Fonction pour initialiser la navigation mobile
+function initMobileNav() {
+    const sidebar = document.getElementById('sidebar');
+    const sidebarHeader = sidebar.querySelector('.sidebar-header');
+    
+    // Créer le bouton hamburger s'il n'existe pas déjà
+    if (!document.getElementById('sidebar-toggle')) {
+        const toggleButton = document.createElement('button');
+        toggleButton.id = 'sidebar-toggle';
+        toggleButton.className = 'sidebar-toggle';
+        toggleButton.innerHTML = '<i class="fas fa-bars"></i>';
+        toggleButton.setAttribute('aria-label', 'Menu');
+        
+        // Ajouter le bouton à l'en-tête de la sidebar
+        sidebarHeader.appendChild(toggleButton);
+        
+        // Réduire la sidebar par défaut sur mobile
+        if (window.innerWidth <= 768) {
+            sidebar.classList.add('sidebar-collapsed');
+        }
+        
+        // Ajouter l'événement pour ouvrir/fermer le menu
+        toggleButton.addEventListener('click', function() {
+            sidebar.classList.toggle('sidebar-collapsed');
+        });
+        
+        // Fermer le menu après avoir cliqué sur un élément
+        const menuItems = sidebar.querySelectorAll('.menu-item');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.add('sidebar-collapsed');
+                }
+            });
+        });
+    }
+}
+
+// Appeler cette fonction au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    // Cette ligne doit être appelée après que tous les autres éléments DOM sont initialisés
+    setTimeout(initMobileNav, 100);
+});
+
+// Gérer le redimensionnement de la fenêtre
+window.addEventListener('resize', function() {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) {
+        if (window.innerWidth <= 768) {
+            if (!sidebar.classList.contains('sidebar-collapsed')) {
+                sidebar.classList.add('sidebar-collapsed');
+            }
+        } else {
+            sidebar.classList.remove('sidebar-collapsed');
+        }
+    }
+});
