@@ -2,6 +2,7 @@
 const express = require('express');
 const mysql = require('mysql2');
 const dotenv = require('dotenv');
+const path = require('path');
 
 // Chargement des variables d'environnement
 dotenv.config();
@@ -9,6 +10,9 @@ dotenv.config();
 // Création de l'application Express
 const app = express();
 app.use(express.json());
+
+// Servez les fichiers statiques (CSS, JS, images)
+app.use(express.static(path.join(__dirname, '..', 'front_end'))); // Cette ligne sert les fichiers statiques
 
 // Connexion à la base de données
 const db = mysql.createConnection({
@@ -30,7 +34,7 @@ db.connect((err) => {
 // Routes
 // Route de test
 app.get('/', (req, res) => {
-  res.send('Bienvenue sur l\'API du tournoi Futsal !');
+  res.sendFile(path.join(__dirname, '..', 'front_end', 'index.html'));
 });
 
 // Route pour obtenir les équipes
@@ -62,7 +66,7 @@ app.post('/matchs', (req, res) => {
 });
 
 // Lancer le serveur
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Serveur en écoute sur le port ${PORT}`);
 });
