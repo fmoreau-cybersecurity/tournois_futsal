@@ -6,8 +6,55 @@
     <title>Gestionnaire de Tournoi Futsal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <script src="api-service.js"></script>
 </head>
 <body>
+
+    <div id="auth-overlay" class="auth-overlay">
+        <div class="auth-container">
+          <div class="auth-tabs">
+            <button id="login-tab" class="auth-tab active">Connexion</button>
+            <button id="register-tab" class="auth-tab">Inscription</button>
+          </div>
+          
+          <!-- Formulaire de connexion -->
+          <form id="login-form" class="auth-form">
+            <h2 class="settings-title">Connexion</h2>
+            <div class="form-group">
+              <label for="login-email">Email</label>
+              <input type="email" id="login-email" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="login-password">Mot de passe</label>
+              <input type="password" id="login-password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary auth-submit">Se connecter</button>
+          </form>
+          
+          <!-- Formulaire d'inscription -->
+          <form id="register-form" class="auth-form hidden">
+            <h2 class="settings-title">Inscription</h2>
+            <div class="form-group">
+              <label for="register-name">Nom complet</label>
+              <input type="text" id="register-name" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="register-email">Email</label>
+              <input type="email" id="register-email" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="register-password">Mot de passe</label>
+              <input type="password" id="register-password" class="form-control" required minlength="8">
+            </div>
+            <div class="form-group">
+              <label for="register-confirm">Confirmer le mot de passe</label>
+              <input type="password" id="register-confirm" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary auth-submit">S'inscrire</button>
+          </form>
+        </div>
+      </div>
+
     <div class="container">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
@@ -53,8 +100,7 @@
                 <h1 id="page-title">Tableau de Bord</h1>
                 <div class="user-controls">
                     <span id="user-role">Utilisateur</span>
-                    <button class="btn btn-secondary" id="toggle-admin">Mode Admin</button>
-                    <button class="btn btn-primary" id="user-settings">Paramètres</button>
+                    <button class="btn btn-primary" id="logout-btn">Déconnexion</button>
                 </div>
             </div>
 
@@ -356,3 +402,4 @@
     </div>
     <script src="script.js"></script>
 </body>
+</html>
