@@ -6,7 +6,6 @@
     <title>Gestionnaire de Tournoi Futsal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <script src="api-service.js"></script>
 </head>
 <body>
 
@@ -121,6 +120,7 @@
                         </div>
                     </div>
                     <div class="widget-content">
+                        <div id="calendar-container"></div>
                         <table>
                             <thead>
                                 <tr>
@@ -172,6 +172,7 @@
                 <div class="widget">
                     <div class="widget-header">
                         <h3 class="widget-title"><i class="fas fa-trophy"></i> Résultats des Matchs</h3>
+                        <!-- Le bouton pour ajouter un résultat sera ajouté dynamiquement ici -->
                     </div>
                     <div class="widget-content">
                         <table>
@@ -400,6 +401,41 @@
             </form>
         </div>
     </div>
+
+    <!-- Add Result Modal -->
+    <div class="modal" id="add-result-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ajouter un Résultat</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="add-result-form">
+                <div class="form-group">
+                    <label>Match</label>
+                    <select class="form-control" id="result-match" required>
+                        <!-- Les matchs seront ajoutés dynamiquement -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Score Équipe A</label>
+                    <input type="number" min="0" class="form-control" id="score-team-a" required>
+                </div>
+                <div class="form-group">
+                    <label>Score Équipe B</label>
+                    <input type="number" min="0" class="form-control" id="score-team-b" required>
+                </div>
+                <div class="form-group">
+                    <label>Détails (optionnel)</label>
+                    <textarea class="form-control" id="result-details" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Enregistrer le Résultat</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Zone de notification -->
+    <div id="notification-container"></div>
+
     <script src="script.js"></script>
 </body>
 </html>
