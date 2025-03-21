@@ -561,6 +561,300 @@ function addEventListeners() {
         });
     }
     
+    // Charger le match en direct s'il y en a un
+function loadLiveMatch() {
+    console.log('Recherche de match en direct...');
+    
+    // Rechercher un match avec le statut "en cours"
+    const liveMatch = matchesData.find(m => m.statut === 'en cours');
+    
+    if (!liveMatch) {
+        console.log('Aucun match en direct trouvé');
+        return;
+    }
+    
+    console.log('Match en direct trouvé:', liveMatch);
+    
+    // Mettre à jour l'affichage du match en direct
+    const noLiveMessage = document.getElementById('no-live-message');
+    const liveMatchDetails = document.getElementById('live-match-details');
+    const teamAName = document.getElementById('team-a-name');
+    const teamBName = document.getElementById('team-b-name');
+    const teamAScore = document.getElementById('team-a-score');
+    const teamBScore = document.getElementById('team-b-score');
+    const matchTime = document.getElementById('match-time');
+    
+    if (!noLiveMessage || !liveMatchDetails || !teamAName || !teamBName || 
+        !teamAScore || !teamBScore || !matchTime) {
+        console.error('Éléments nécessaires pour le match en direct non trouvés');
+        return;
+    }
+    
+    // Afficher les détails du match
+    noLiveMessage.style.display = 'none';
+    liveMatchDetails.classList.remove('hidden');
+    
+    teamAName.textContent = liveMatch.equipe1_nom;
+    teamBName.textContent = liveMatch.equipe2_nom;
+    teamAScore.textContent = liveMatch.score_equipe1 || '0';
+    teamBScore.textContent = liveMatch.score_equipe2 || '0';
+    
+    // Indiquer que le match est en cours
+    const matchEvents = document.getElementById('match-events');
+    if (matchEvents) {
+        matchEvents.innerHTML = `
+            <div class="event system">
+                <strong>--:--</strong> - Match en cours
+            </div>
+        `;
+    }
+    
+    // Mettre à jour le tableau de bord pour tous les utilisateurs
+    const dashboardLiveStatus = document.getElementById('dashboard-live-status');
+    if (dashboardLiveStatus) {
+        dashboardLiveStatus.innerHTML = `
+            <div class="text-center mb-10">
+                <strong><span class="match-live-indicator">⚽ EN DIRECT</span></strong>
+            </div>
+            <div class="text-center mb-10">
+                <strong>${liveMatch.equipe1_nom} 
+                ${liveMatch.score_equipe1 || '0'} - 
+                ${liveMatch.score_equipe2 || '0'} 
+                ${liveMatch.equipe2_nom}</strong>
+            </div>
+            <div class="text-center">
+                <a href="#" class="btn btn-primary watch-live-btn">Regarder le match</a>
+            </div>
+        `;
+        
+        // Ajouter un écouteur pour le bouton "Regarder le match"
+        const watchLiveBtn = dashboardLiveStatus.querySelector('.watch-live-btn');
+        if (watchLiveBtn) {
+            watchLiveBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                changePage('live-match');
+            });
+        }
+    }
+    
+    // Ajouter un indicateur dans le menu
+    const liveMenuItem = document.querySelector('.menu-item[data-page="live-match"]');
+    if (liveMenuItem) {
+        // Ajouter un indicateur visuel (point rouge) au menu
+        if (!liveMenuItem.querySelector('.live-indicator')) {
+            const indicator = document.createElement('span');
+            indicator.className = 'live-indicator';
+            indicator.innerHTML = ' 🔴';
+            liveMenuItem.appendChild(indicator);
+        }
+    }
+}
+// Configuration du monitoring en temps réel des matchs
+function setupLiveMatchMonitoring() {
+    console.log('Configuration du monitoring des matchs en direct');
+    
+    // Première vérification immédiate
+    checkForLiveMatches();
+    
+    // Puis vérifier toutes les 30 secondes s'il y a un nouveau match en direct
+    setInterval(checkForLiveMatches, 30000);
+}
+
+// Vérifier s'il y a des matchs en direct
+let currentLiveMatchId = null;
+async function checkForLiveMatches() {
+    if (!currentUser) return; // Ne pas vérifier si l'utilisateur n'est pas connecté
+    
+    try {
+        // Récupérer les matchs depuis l'API
+        const matchesResponse = await fetch(`${window.location.origin}/matchs`);
+        if (!matchesResponse.ok) {
+            throw new Error('Erreur lors de la récupération des matchs');
+        }
+        
+        const updatedMatches = await matchesResponse.json();
+        
+        // Rechercher un match avec le statut "en cours"
+        const liveMatch = updatedMatches.find(m => m.statut === 'en cours');
+        
+        if (liveMatch) {
+            // Si c'est un nouveau match en direct (différent de celui déjà suivi)
+            if (currentLiveMatchId !== liveMatch.id) {
+                console.log('Nouveau match en direct détecté:', liveMatch.id);
+                
+                // Stocker l'ID du match en direct actuel
+                currentLiveMatchId = liveMatch.id;
+                
+                // Mettre à jour les données locales
+                matchesData = updatedMatches;
+                
+                // Notification pour tous les utilisateurs
+                showNotification(`⚽ MATCH EN DIRECT: ${liveMatch.equipe1_nom} vs ${liveMatch.equipe2_nom}`, 'important');
+                
+                // Ajouter l'indicateur dans le menu latéral
+                addLiveMatchIndicator();
+                
+                // Mettre à jour le widget sur le tableau de bord
+                updateLiveMatchDisplay(liveMatch);
+                
+                // Si l'utilisateur est sur la page de match en direct, charger automatiquement le match
+                if (currentPage === 'live-match') {
+                    loadLiveMatchDetails(liveMatch);
+                }
+            }
+        } else {
+            // S'il n'y a plus de match en direct mais qu'on en suivait un
+            if (currentLiveMatchId !== null) {
+                console.log('Match en direct terminé');
+                
+                // Réinitialiser l'ID du match en direct actuel
+                currentLiveMatchId = null;
+                
+                // Mettre à jour les données locales
+                matchesData = updatedMatches;
+                
+                // Supprimer l'indicateur du menu
+                removeLiveMatchIndicator();
+                
+                // Si on est sur le dashboard, réinitialiser le widget
+                resetDashboardLiveWidget();
+                
+                // Si on est sur la page de match en direct, afficher un message
+                if (currentPage === 'live-match') {
+                    showNoLiveMatchMessage();
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Erreur lors de la vérification des matchs en direct:', error);
+    }
+}
+
+// Ajouter l'indicateur de match en direct dans le menu
+function addLiveMatchIndicator() {
+    const liveMenuItem = document.querySelector('.menu-item[data-page="live-match"]');
+    if (liveMenuItem && !liveMenuItem.querySelector('.live-indicator')) {
+        const indicator = document.createElement('span');
+        indicator.className = 'live-indicator';
+        indicator.innerHTML = ' 🔴';
+        liveMenuItem.appendChild(indicator);
+        
+        // Faire clignoter l'élément de menu pour attirer l'attention
+        liveMenuItem.classList.add('pulsing');
+        setTimeout(() => liveMenuItem.classList.remove('pulsing'), 5000);
+    }
+}
+
+// Supprimer l'indicateur de match en direct du menu
+function removeLiveMatchIndicator() {
+    const liveIndicator = document.querySelector('.menu-item[data-page="live-match"] .live-indicator');
+    if (liveIndicator) {
+        liveIndicator.remove();
+    }
+}
+
+// Mettre à jour l'affichage du match en direct sur le tableau de bord
+function updateLiveMatchDisplay(match) {
+    const dashboardLiveStatus = document.getElementById('dashboard-live-status');
+    if (dashboardLiveStatus) {
+        dashboardLiveStatus.innerHTML = `
+            <div class="text-center mb-10">
+                <strong><span class="match-live-indicator">⚽ EN DIRECT</span></strong>
+            </div>
+            <div class="text-center mb-10">
+                <strong>${match.equipe1_nom} 
+                ${match.score_equipe1 || '0'} - 
+                ${match.score_equipe2 || '0'} 
+                ${match.equipe2_nom}</strong>
+            </div>
+            <div class="text-center">
+                <a href="#" class="btn btn-primary watch-live-btn">Regarder le match</a>
+            </div>
+        `;
+        
+        // Ajouter un écouteur pour le bouton "Regarder le match"
+        const watchLiveBtn = dashboardLiveStatus.querySelector('.watch-live-btn');
+        if (watchLiveBtn) {
+            watchLiveBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                changePage('live-match');
+            });
+        }
+    }
+}
+
+// Réinitialiser le widget de match en direct sur le tableau de bord
+function resetDashboardLiveWidget() {
+    const dashboardLiveStatus = document.getElementById('dashboard-live-status');
+    if (dashboardLiveStatus) {
+        dashboardLiveStatus.innerHTML = `
+            <div class="text-center mb-20">
+                Aucun match en direct pour le moment
+            </div>
+        `;
+    }
+}
+
+// Afficher les détails du match en direct dans la page de match en direct
+function loadLiveMatchDetails(match) {
+    // Vérifier que les éléments nécessaires existent
+    const noLiveMessage = document.getElementById('no-live-message');
+    const liveMatchDetails = document.getElementById('live-match-details');
+    const teamAName = document.getElementById('team-a-name');
+    const teamBName = document.getElementById('team-b-name');
+    const teamAScore = document.getElementById('team-a-score');
+    const teamBScore = document.getElementById('team-b-score');
+    const matchTime = document.getElementById('match-time');
+    const matchEvents = document.getElementById('match-events');
+    
+    if (!noLiveMessage || !liveMatchDetails || !teamAName || !teamBName || 
+        !teamAScore || !teamBScore || !matchTime || !matchEvents) {
+        console.error('Éléments nécessaires pour le match en direct non trouvés');
+        return;
+    }
+    
+    // Afficher les détails du match
+    noLiveMessage.style.display = 'none';
+    liveMatchDetails.classList.remove('hidden');
+    
+    teamAName.textContent = match.equipe1_nom;
+    teamBName.textContent = match.equipe2_nom;
+    teamAScore.textContent = match.score_equipe1 || '0';
+    teamBScore.textContent = match.score_equipe2 || '0';
+    matchTime.textContent = 'EN DIRECT';
+    
+    // Afficher un message dans la liste des événements
+    matchEvents.innerHTML = `
+        <div class="event system">
+            <strong>--:--</strong> - Match en cours, restez à l'écoute pour les mises à jour
+        </div>
+    `;
+    
+    // Mettre à jour le titre de la page
+    const pageTitle = document.getElementById('page-title');
+    if (pageTitle) {
+        pageTitle.innerHTML = `<i class="fas fa-broadcast-tower"></i> Match en Direct: ${match.equipe1_nom} vs ${match.equipe2_nom}`;
+    }
+}
+
+// Afficher un message quand il n'y a pas de match en direct
+function showNoLiveMatchMessage() {
+    const noLiveMessage = document.getElementById('no-live-message');
+    const liveMatchDetails = document.getElementById('live-match-details');
+    
+    if (noLiveMessage && liveMatchDetails) {
+        noLiveMessage.style.display = 'block';
+        liveMatchDetails.classList.add('hidden');
+    }
+}
+
+// Initialiser le système de notification au chargement
+document.addEventListener('DOMContentLoaded', function() {
+    // Autres initialisations...
+    
+    // Ajouter cette ligne à la fin de l'initialisation pour démarrer le monitoring
+    setTimeout(setupLiveMatchMonitoring, 3000); // Attendre 3 secondes après le chargement
+});
     // Select live match button
     const selectLiveMatchBtn = document.getElementById('select-live-match');
     if (selectLiveMatchBtn) {
@@ -854,6 +1148,7 @@ function saveUserPreferences() {
 }
 
 // Load data
+// Load data
 function loadData() {
     console.log('Chargement des données dans l\'interface');
     
@@ -876,6 +1171,9 @@ function loadData() {
     if (typeof loadCalendar === 'function') {
         loadCalendar();
     }
+    
+    // IMPORTANT: Charger le match en direct s'il y en a un
+    loadLiveMatch();
     
     // Configure les boutons de suppression
     setupDeleteButtons();

@@ -761,14 +761,6 @@
     animation: pulse 1.5s infinite;
 }
 
-.latest-event {
-    font-style: italic;
-    background-color: #f8f9fa;
-    padding: 8px;
-    border-radius: 4px;
-    border-left: 3px solid var(--primary-color);
-}
-
 /* Animation de pulsation */
 @keyframes pulse {
     0% {
@@ -801,4 +793,345 @@
     .time-buttons .btn {
         margin-bottom: 5px;
     }
+}
+/* Ajouts pour le système de notification et les matchs en direct */
+
+/* Conteneur de notifications */
+#notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    width: 300px;
+}
+
+/* Notification individuelle */
+.notification {
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 10px;
+    animation: slideIn 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+.notification-content {
+    padding: 15px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification-message {
+    flex: 1;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 10px;
+    opacity: 0.6;
+}
+
+.notification-close:hover {
+    opacity: 1;
+}
+
+/* Types de notifications */
+.notification-info {
+    border-left: 4px solid var(--primary-color);
+}
+
+.notification-important {
+    border-left: 4px solid #e53935;
+}
+
+.notification-success {
+    border-left: 4px solid #43a047;
+}
+
+.notification-warning {
+    border-left: 4px solid #fb8c00;
+}
+
+/* Animation pour les notifications */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.notification-closing {
+    animation: slideOut 0.3s ease-in-out;
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Animation pour l'élément de menu */
+.pulsing {
+    animation: backgroundPulse 1s ease-in-out 3;
+}
+
+@keyframes backgroundPulse {
+    0% {
+        background-color: transparent;
+    }
+    50% {
+        background-color: rgba(229, 57, 53, 0.2);
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
+/* Améliorations des styles pour les événements de match */
+.events-log {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 15px;
+    background-color: #f9f9f9;
+}
+
+.event {
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    border-left: 3px solid #ddd;
+}
+
+.event.system {
+    background-color: #f5f5f5;
+    border-left-color: #607d8b;
+}
+
+.event.goal {
+    background-color: rgba(76, 175, 80, 0.1);
+    border-left-color: #4caf50;
+}
+
+.event.card {
+    background-color: rgba(244, 67, 54, 0.1);
+    border-left-color: #f44336;
+}
+
+.event.foul {
+    background-color: rgba(255, 152, 0, 0.1);
+    border-left-color: #ff9800;
+}
+
+.event.substitution {
+    background-color: rgba(33, 150, 243, 0.1);
+    border-left-color: #2196f3;
+}
+
+/* Styles pour le bouton de visionnage du match */
+.watch-live-btn {
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.watch-live-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Style pour le temps "EN DIRECT" */
+#match-time.live {
+    background-color: #e53935;
+    animation: pulse 1.5s infinite;
+}
+
+/* Mise en évidence de la dernière action */
+.latest-event {
+    font-style: italic;
+    background-color: #f8f9fa;
+    padding: 8px;
+    border-radius: 4px;
+    border-left: 3px solid var(--primary-color);
+    margin-bottom: 10px;
+}
+
+/* Styles pour les contrôles de match en direct améliorés */
+.time-buttons.admin-only {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+/* Amélioration des styles pour la section de contrôle admin */
+.admin-controls {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.admin-controls h4 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+/* Améliorations pour l'affichage du score */
+#live-match .score-display {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    align-items: center;
+    font-size: 2rem;
+    margin: 20px 0;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Animation de clignotement pour les nouveaux événements */
+@keyframes highlight {
+    0% {
+        background-color: rgba(255, 235, 59, 0.3);
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
+.new-event {
+    animation: highlight 2s ease-out;
+}
+
+/* Styles pour les filtres de recherche de table */
+.filter-container {
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.filter-container input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.filter-container input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 3px rgba(30, 136, 229, 0.3);
+}
+
+/* Styles améliorés pour les modals */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 200;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 25px;
+    width: 70%;
+    max-width: 600px;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(0);
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Améliorations des boutons */
+.btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn i {
+    margin-right: 5px;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #138496;
 }
