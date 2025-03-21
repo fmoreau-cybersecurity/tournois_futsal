@@ -1,0 +1,64 @@
+CREATE DATABASE tournoi_futsal;
+
+USE tournoi_futsal;
+
+CREATE TABLE utilisateurs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(50),
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(255),
+    role ENUM('admin', 'user') DEFAULT 'user',
+    date_inscription TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE equipes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100),
+);
+
+CREATE TABLE matchs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    equipe1_id INT,
+    equipe2_id INT,
+    score_equipe1 INT DEFAULT 0,
+    score_equipe2 INT DEFAULT 0,
+    date_match DATETIME,
+    statut ENUM('à venir', 'en cours', 'terminé') DEFAULT 'à venir',
+    FOREIGN KEY (equipe1_id) REFERENCES equipes(id) ON DELETE CASCADE,
+    FOREIGN KEY (equipe2_id) REFERENCES equipes(id) ON DELETE CASCADE
+);
+
+CREATE TABLE classement (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    equipe_id INT UNIQUE,
+    points INT DEFAULT 0,
+    victoires INT DEFAULT 0,
+    nuls INT DEFAULT 0,
+    defaites INT DEFAULT 0,
+    buts_pour INT DEFAULT 0,
+    buts_contre INT DEFAULT 0,
+    FOREIGN KEY (equipe_id) REFERENCES equipes(id) ON DELETE CASCADE
+);
+
+CREATE TABLE calendrier (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date_match DATE,
+    heure_match TIME,
+    equipe1_id INT,
+    equipe2_id INT,
+    lieu VARCHAR(255),
+    FOREIGN KEY (equipe1_id) REFERENCES equipes(id) ON DELETE CASCADE,
+    FOREIGN KEY (equipe2_id) REFERENCES equipes(id) ON DELETE CASCADE
+);
+
+CREATE TABLE resultats (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date_match DATE,
+    equipe1_id INT,
+    score_equipe1 INT DEFAULT 0,
+    equipe2_id INT,
+    score_equipe2 INT DEFAULT 0,
+    FOREIGN KEY (equipe1_id) REFERENCES equipes(id) ON DELETE CASCADE,
+    FOREIGN KEY (equipe2_id) REFERENCES equipes(id) ON DELETE CASCADE
+);
+
